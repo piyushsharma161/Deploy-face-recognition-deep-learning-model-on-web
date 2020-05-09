@@ -81,7 +81,9 @@ def model_predict(img_path):
                     return 'Piyush'
                     #cv2.putText(img,name, (face_cor[0], face_cor[1]), cv2.FONT_HERSHEY_COMPLEX, 1, (0,255,0), 2)
                 elif (pred[0][0]>0.5):
-                    return 'Myra'       
+                    return 'Myra' 
+                #elif (pred[0][0]>0.5):
+                    #return 'Mantu'
                     #cv2.putText(img,name, (face_cor[0], face_cor[1]), cv2.FONT_HERSHEY_COMPLEX, 1, (0,255,0), 2)
         else:
             return 'Not detected'
@@ -103,7 +105,21 @@ def index():
 
 @app.route('/predict', methods=['GET', 'POST'])
 def upload():
-    if request.method == 'POST':
+    if request.json is not None:
+        # Get the file from post request
+        f = request.json['file']
+
+        # Save the file to ./uploads
+        basepath = os.path.dirname(__file__)
+        file_path = os.path.join(
+            basepath, 'uploads', secure_filename(f.filename))
+        f.save(file_path)
+
+        # Make prediction
+        result = model_predict(file_path)
+
+        return result
+    elif request.form is not None:
         # Get the file from post request
         f = request.files['file']
 
